@@ -17,20 +17,31 @@ def main():
     #9 back in index is asian male and female
     resultTable = rf.read_entire_file(file);
 
-    nationWide_results = comp.create_data_dictionary(resultTable);
-    [print(state, nationWide_results[state]) for state in nationWide_results];
+    nationWide_results, largest_race = comp.create_data_dictionary(resultTable);
+
     print("Creating Map");
     trc= dict(
         type ='choropleth',
         locations = [state for state in nationWide_results],
         locationmode='USA-states',
         colorscale=['Viridis'],
-        z = [np.sum(nationWide_results[i]) for i in nationWide_results]
+        z = [np.max(nationWide_results[i]) for i in nationWide_results],
+        text=[largest_race[i] for i in largest_race],
+        marker = dict(
+            line = dict (
+                color = 'rgb(255,255,255)',
+                width = 2
+            ) ),
+        colorbar = dict(
+            title = "Millions USD")
+
         )
+
+
     lyt= dict(geo=dict(scope='usa'))
     map=go.Figure(data=[trc],layout=lyt)
     py.plot(map);
-
+    py.image.save_as(map, filename='usa_data_map.png')
 
 
 
